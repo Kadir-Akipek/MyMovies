@@ -1,42 +1,73 @@
 import React from 'react';
 import SearchBar from './SearchBar';
 import MovieList from './MovieList';
+import axios from 'axios';
 
 //Listeleyeceğimiz film sayısı belli olmadığı için state kullanacağız, state içinde class component kullanacağız
-//state bir obje olduğu için, state içerisindeki array property olacaktır
+//State bir obje olduğu için, state içerisindeki array property olacaktır
 //Parent Component(App.js)' dan child component(MovieList)'a geçmemizin en kolay yolu MovieList'e prop oluşturmaktır
+//fetch js'ye ait bir fonksiyondur, asenkron olarak network sorguları yapmamızı sağlar
+//axious HTTP istekleri yapmak için kullanılıe
+//İçeriğini görmek istediklerimizi render'a koyarız, api hariç
+//Dışarıdan http isteği yapacaksak, componentDidMount metodu en uygunudur
+//async asenkron demek
 
 class  App extends React.Component {
 
     state = {
-        movies : [
-            {
-              "id": 1,
-              "name": "The Flash",
-              "rating": 8.3,
-              "overview": "This is a wider card with supporting text below as a natural lead-in to additional content.",
-              "imageURL": "https://image.tmdb.org/t/p/w220_and_h330_face/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
-            },
-            {
-              "id": 2,
-              "name": "Interstellar",
-              "rating": 6.8,
-              "overview": "This is a wider card with supporting text below as a natural lead-in to additional content.",
-              "imageURL": "https://image.tmdb.org/t/p/w220_and_h330_face/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
-            },
-            {
-                "id": 3,
-                "name": "Arrow",
-                "rating": 7.9,
-                "overview": "This is a wider card with supporting text below as a natural lead-in to additional content.",
-                "imageURL": "https://image.tmdb.org/t/p/w220_and_h330_face/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg"
-            }
-        ],
+        movies : [],
 
         searchQuery: ""
     }  
 
-    deleteMovie = (movie) => {
+    /*GET requiest'i fetch ile yaptık
+        async componentDidMount() {
+        const baseURL = "http://localhost:3002/movies";
+        const response = await fetch(baseURL);
+        console.log(response)
+        const data = await response.json();
+        console.log(data)
+        this.setState({movies: data})
+    }*/
+
+    //GET request'i axious ile yaptık
+    async componentDidMount() {
+        const response = await axios.get("http://localhost:3002/movies")
+        //console.log(response);
+        this.setState({movies: response.data})
+    }
+
+    /*deleteMovie = (movie) => {
+        const newMovieList = this.state.movies.filter(
+            m => m.id !== movie.id
+        );
+
+        this.setState(state => ({
+            movies: newMovieList
+        }))
+    }*/
+
+    /*fetch api
+    deleteMovie = async (movie) => {
+
+        const baseURL = `http://localhost:3002/movies/${movie.id}`;
+        await fetch(baseURL, {
+            method: "DELETE"
+        })
+
+        const newMovieList = this.state.movies.filter(
+            m => m.id !== movie.id
+        );
+
+        this.setState(state => ({
+            movies: newMovieList
+        }))
+    }*/
+
+    //axious
+    deleteMovie = async (movie) => {
+
+        axios.delete(`http://localhost:3002/movies/${movie.id}`)
         const newMovieList = this.state.movies.filter(
             m => m.id !== movie.id
         );
