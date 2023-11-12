@@ -1,7 +1,9 @@
 import React from 'react';
 import SearchBar from './SearchBar';
 import MovieList from './MovieList';
+import AddMovie from './AddMovie';
 import axios from 'axios';
+import {BrowserRouter as Router, Routes,Switch, Route, Link} from 'react-router-dom';
 
 //Listeleyeceğimiz film sayısı belli olmadığı için state kullanacağız, state içinde class component kullanacağız
 //State bir obje olduğu için, state içerisindeki array property olacaktır
@@ -11,6 +13,7 @@ import axios from 'axios';
 //İçeriğini görmek istediklerimizi render'a koyarız, api hariç
 //Dışarıdan http isteği yapacaksak, componentDidMount metodu en uygunudur
 //async asenkron demek
+//render etmek istediğimiz kodu, fazladan div yazmayarak <React.Fragment> ile halledebiliriz
 
 class  App extends React.Component {
 
@@ -20,16 +23,6 @@ class  App extends React.Component {
         searchQuery: ""
     }  
 
-    /*GET requiest'i fetch ile yaptık
-        async componentDidMount() {
-        const baseURL = "http://localhost:3002/movies";
-        const response = await fetch(baseURL);
-        console.log(response)
-        const data = await response.json();
-        console.log(data)
-        this.setState({movies: data})
-    }*/
-
     //GET request'i axious ile yaptık
     async componentDidMount() {
         const response = await axios.get("http://localhost:3002/movies")
@@ -37,34 +30,7 @@ class  App extends React.Component {
         this.setState({movies: response.data})
     }
 
-    /*deleteMovie = (movie) => {
-        const newMovieList = this.state.movies.filter(
-            m => m.id !== movie.id
-        );
-
-        this.setState(state => ({
-            movies: newMovieList
-        }))
-    }*/
-
-    /*fetch api
-    deleteMovie = async (movie) => {
-
-        const baseURL = `http://localhost:3002/movies/${movie.id}`;
-        await fetch(baseURL, {
-            method: "DELETE"
-        })
-
-        const newMovieList = this.state.movies.filter(
-            m => m.id !== movie.id
-        );
-
-        this.setState(state => ({
-            movies: newMovieList
-        }))
-    }*/
-
-    //axious
+    //axious api
     deleteMovie = async (movie) => {
 
         axios.delete(`http://localhost:3002/movies/${movie.id}`)
@@ -78,33 +44,42 @@ class  App extends React.Component {
     }
 
     searchMovie = (event) => {
-        //console.log(event.target.value)
         this.setState({searchQuery: event.target.value})
     }
 
     render() {
-
         let filteredMovies = this.state.movies.filter(
             (movie) => {
                 return movie.name.toLowerCase().indexOf(this.state.searchQuery.toLowerCase()) !== -1
             }
-        )
+        );
 
-        return(
-            <div className="container">
-                <div className="row">
-                    <div className="col-lg-12">
-                        <SearchBar 
-                            searchMovieProp = {this.searchMovie}
+        return (
+            <Router>
+                <div className="container">
+                    <Routes>
+                        <Route path="/" exact
+                            element={
+                                <React.Fragment>
+                                    <div className="row">
+                                        <div className="col-lg-12">
+                                            <SearchBar searchMovieProp={this.searchMovie} />
+                                        </div>
+                                    </div>
+                                    <MovieList
+                                        movies={filteredMovies}
+                                        deleteMovieProp={this.deleteMovie}
+                                    />
+                                </React.Fragment>
+                            }
                         />
-                    </div>
+
+                        <Route path="/add" element={<AddMovie />} />
+                    </Routes>
                 </div>
-                <MovieList 
-                movies={filteredMovies} 
-                deleteMovieProp = {this.deleteMovie}    />
-            </div>
+            </Router>
         );
     }
-};
+}
 
 export default App;
