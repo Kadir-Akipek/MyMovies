@@ -1,9 +1,7 @@
 import React from 'react';
 import SearchBar from './SearchBar';
 import MovieList from './MovieList';
-import AddMovie from './AddMovie';
 import axios from 'axios';
-import {BrowserRouter as Router, Routes,Switch, Route, Link} from 'react-router-dom';
 
 //Listeleyeceğimiz film sayısı belli olmadığı için state kullanacağız, state içinde class component kullanacağız
 //State bir obje olduğu için, state içerisindeki array property olacaktır
@@ -55,29 +53,17 @@ class  App extends React.Component {
         );
 
         return (
-            <Router>
                 <div className="container">
-                    <Routes>
-                        <Route path="/" exact
-                            element={
-                                <React.Fragment>
-                                    <div className="row">
-                                        <div className="col-lg-12">
-                                            <SearchBar searchMovieProp={this.searchMovie} />
-                                        </div>
-                                    </div>
-                                    <MovieList
-                                        movies={filteredMovies}
-                                        deleteMovieProp={this.deleteMovie}
-                                    />
-                                </React.Fragment>
-                            }
-                        />
-
-                        <Route path="/add" element={<AddMovie />} />
-                    </Routes>
+                    <div className="row">
+                        <div className="col-lg-12">
+                                <SearchBar searchMovieProp={this.searchMovie} />
+                                </div>
+                        </div>
+                        <MovieList
+                        movies={filteredMovies}
+                        deleteMovieProp={this.deleteMovie}
+                    />
                 </div>
-            </Router>
         );
     }
 }
